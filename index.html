@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2026 Midterm Battlegrounds</title>
+<meta name="description" content="Live results for the closest Senate, governor and House races of the 2026 midterms.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<style>
+  /* Layout: one column, header → chamber control cards → filterable race grid grouped by office */
+  :root {
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --fg: #16191f;
+    --muted: #5b6270;
+    --line: #dde1e8;
+    --track: #e7eaf0;
+    --warn: #b25f00;
+    --bad: #c4302b;
+    --d: #2f6bd4;
+    --r: #d23f36;
+    --i: #8a5cc4;
+    --font-body: "Libre Franklin", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1216; --panel: #171b21; --fg: #e8eaee; --muted: #9aa2b1; --line: #2a3039; --track: #262c35;
+      --warn: #f0a24a; --bad: #f0645e; --d: #5b8ef0; --r: #ef6a60; --i: #a985e0; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1216; --panel: #171b21; --fg: #e8eaee; --muted: #9aa2b1; --line: #2a3039; --track: #262c35;
+    --warn: #f0a24a; --bad: #f0645e; --d: #5b8ef0; --r: #ef6a60; --i: #a985e0; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: var(--font-body); font-size: 15px; line-height: 1.45;
+  }
+  .wrap {
+    max-width: 78rem; margin-inline: auto;
+    padding-block: 2rem 3rem;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: flex; flex-direction: column; gap: 2rem;
+  }
+  h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.9rem, 4vw, 2.6rem); line-height: 1.1; margin: 0; text-wrap: balance; }
+  h2 { font-size: 1.1rem; font-weight: 600; margin: 0; }
+  .head { display: flex; flex-direction: column; gap: .4rem; }
+  .take { margin: 0; font-size: 1.05rem; max-width: 70ch; }
+  .take b { font-weight: 600; }
+  .asof { margin: 0; color: var(--muted); font-size: .85rem; }
+  .section { display: flex; flex-direction: column; gap: 1rem; }
+
+  .control { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: 1rem; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 1.1rem 1.25rem; display: flex; flex-direction: column; gap: .6rem; min-width: 0; }
+  .panel h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+  .note { margin: 0; color: var(--muted); font-size: .85rem; }
+  .big { font-family: var(--font-display); font-size: 2rem; line-height: 1.1; font-variant-numeric: tabular-nums; display: flex; gap: 1rem; align-items: baseline; flex-wrap: wrap; }
+  .big .d { color: var(--d); } .big .r { color: var(--r); } .big .i { color: var(--i); }
+  .big small { font-family: var(--font-body); font-size: .8rem; color: var(--muted); }
+  .seatbar { position: relative; height: 14px; border-radius: 4px; background: var(--track); display: flex; }
+  .seatbar .sd { background: var(--d); border-radius: 4px 0 0 4px; }
+  .seatbar .sr { background: var(--r); border-radius: 0 4px 4px 0; }
+  .seatbar .gap { flex: 1; }
+  .seatbar .tick { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--fg); }
+  .tally { margin: 0; font-size: .82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .live { margin: 0; color: var(--warn); font-weight: 600; }
+
+  .filter { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .chip { font: inherit; font-size: .85rem; padding: .3rem .9rem; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); cursor: pointer; }
+  .chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .chip:focus-visible { outline: 2px solid var(--d); outline-offset: 2px; }
+
+  .grid { display: flex; flex-direction: column; gap: 1.5rem; min-height: 12rem; }
+  .group { display: flex; flex-direction: column; gap: .6rem; }
+  .group h3 { margin: 0; font-size: .95rem; font-weight: 500; color: var(--muted); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); gap: 1rem; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-top: 4px solid var(--track); border-radius: 8px; padding: .85rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: .6rem; min-width: 0; }
+  .card.win-D { border-top-color: var(--d); } .card.win-R { border-top-color: var(--r); } .card.win-I { border-top-color: var(--i); }
+  .card.counting { border-top-style: dashed; border-top-color: var(--warn); }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: .5rem; }
+  .card-name { margin: 0; font-size: 1rem; font-weight: 600; }
+  .card-sub { margin: 0; font-size: .8rem; color: var(--muted); }
+  .rating { flex: none; font-size: .78rem; padding: 0 .5rem; border-radius: 999px; border: 1px solid var(--line); white-space: nowrap; }
+  .rating.lean-D { border-color: var(--d); color: var(--d); } .rating.lean-R { border-color: var(--r); color: var(--r); }
+  .cands { display: flex; flex-direction: column; gap: .35rem; }
+  .cand { display: grid; grid-template-columns: 1fr auto; gap: 2px .5rem; font-size: .85rem; font-variant-numeric: tabular-nums; }
+  .cand-name { min-width: 0; overflow-wrap: anywhere; }
+  .cand-name i { font-style: normal; color: var(--muted); }
+  .cand.won .cand-name { font-weight: 600; }
+  .cand-bar { grid-column: 1 / -1; height: 6px; background: var(--track); border-radius: 3px; overflow: hidden; }
+  .cand-bar span { display: block; height: 100%; border-radius: 3px; }
+  .status { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; font-size: .8rem; }
+  .pill { padding: 0 .5rem; border-radius: 999px; color: #fff; font-weight: 600; }
+  .pill.p-D { background: var(--d); } .pill.p-R { background: var(--r); } .pill.p-I { background: var(--i); }
+  .pill.flip { background: var(--fg); color: var(--bg); }
+  .muted { color: var(--muted); }
+  .counting-label { color: var(--warn); font-weight: 600; }
+  .failed { display: flex; align-items: center; justify-content: center; gap: .4rem; color: var(--muted); font-size: .85rem; min-height: inherit; }
+  .failed::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--bad); }
+  .foot { margin: 0; font-size: .8rem; color: var(--muted); max-width: 80ch; }
+  @media (prefers-reduced-motion: no-preference) {
+    .card { transition: border-color .4s ease-out; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="head">
+    <h1>2026 Midterm Battlegrounds</h1>
+    <p class="take" id="take">Loading results…</p>
+    <p class="asof" id="asof"></p>
+  </header>
+
+  <section class="section" aria-labelledby="control-h">
+    <h2 id="control-h">Who controls what</h2>
+    <div class="control">
+      <div class="panel">
+        <h3>Senate</h3>
+        <p class="note" id="sen-note"></p>
+        <div id="ch-Senate"></div>
+      </div>
+      <div class="panel">
+        <h3>House</h3>
+        <p class="note" id="house-note"></p>
+        <div id="ch-House"></div>
+      </div>
+      <div class="panel">
+        <h3>Governors</h3>
+        <p class="note">The closest governor races on the ballot.</p>
+        <div id="ch-Governor"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="races-h">
+    <h2 id="races-h">Races to watch</h2>
+    <div class="filter" role="group" aria-label="Show races">
+      <button type="button" class="chip" data-filter="all" aria-pressed="true">All</button>
+      <button type="button" class="chip" data-filter="Senate" aria-pressed="false">Senate</button>
+      <button type="button" class="chip" data-filter="Governor" aria-pressed="false">Governor</button>
+      <button type="button" class="chip" data-filter="House" aria-pressed="false">House</button>
+      <button type="button" class="chip" data-filter="close" aria-pressed="false">Too close to call</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <p class="foot">Race calls and vote shares come from AP calls as reported by major news outlets, checked every 30 minutes on election night and a few times a day after that. This page reloads the data every two minutes. Ratings are from the Cook Political Report and other forecasters; pre-election poll leads are final averages (Silver Bulletin, RealClearPolitics) or single late polls where no average exists. House races shown are Cook toss-ups from October, not the full House. Times are in your time zone.</p>
+</main>
+
+<script>
+const PARTY = {D: 'Democrat', R: 'Republican', I: 'Independent'};
+const fmtNum = (n) => Number(n).toLocaleString('en-US');
+const fmtPct = (n) => Number(n).toFixed(1);
+const fmtWhen = (iso) => new Date(iso).toLocaleString([], {weekday: 'short', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'});
+const h = (tag, cls, text) => {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+};
+const $ = (id) => document.getElementById(id);
+
+let races = null, control = null, loadFailed = false, filter = 'all';
+
+const tallyFor = (chamber) => {
+  const rs = races.filter((r) => r.chamber === chamber);
+  const n = (f) => rs.filter(f).length;
+  return {
+    total: rs.length,
+    called_d: n((r) => r.status === 'called' && r.winner === 'D'),
+    called_r: n((r) => r.status === 'called' && r.winner === 'R'),
+    called_i: n((r) => r.status === 'called' && r.winner === 'I'),
+    counting: n((r) => r.status === 'counting'),
+    not_started: n((r) => r.status === 'not_started'),
+    flips: n((r) => r.status === 'called' && r.flip === true),
+  };
+};
+
+function renderHeader() {
+  const take = $('take');
+  if (!races) { take.textContent = loadFailed ? 'Results failed to load. The page will try again shortly.' : 'Loading results…'; return; }
+  const called = races.filter((r) => r.status === 'called');
+  const waiting = races.filter((r) => r.status === 'not_started' && r.polls_close).map((r) => r.polls_close).sort();
+  const next = waiting.find((t) => new Date(t).getTime() > Date.now());
+  take.replaceChildren();
+  const b = (t) => h('b', '', t);
+  if (called.length) {
+    const d = called.filter((r) => r.winner === 'D').length;
+    const rep = called.filter((r) => r.winner === 'R').length;
+    const ind = called.filter((r) => r.winner === 'I').length;
+    const flips = called.filter((r) => r.flip === true).length;
+    take.append(b(String(called.length)), ` of ${races.length} battleground races called. Democrats have won `, b(String(d)), ', Republicans ', b(String(rep)));
+    if (ind) take.append(', independents ', b(String(ind)));
+    take.append('. Seats that changed party: ', b(String(flips)), '.');
+  } else if (next) {
+    take.append('No battleground race has been called yet. The next polls close at ', b(fmtWhen(next)), '.');
+  } else {
+    take.append('Polls have closed in every race here. None has been called yet.');
+  }
+  const checked = races.map((r) => r.updated_at).filter(Boolean).sort().pop();
+  $('asof').textContent = checked ? `Results last checked ${fmtWhen(checked)}.` : '';
+}
+
+function renderControl() {
+  const sen = control && control.find((c) => c.chamber === 'Senate');
+  const house = control && control.find((c) => c.chamber === 'House');
+  $('sen-note').textContent = sen ? `Majority is ${sen.majority} seats. Going in, Republicans held ${sen.before_rep} and Democrats ${sen.before_dem} (counting the two independents who caucus with them). A 50–50 split stays Republican through the vice president.` : '';
+  $('house-note').textContent = house ? `Majority is ${fmtNum(house.majority)} of ${fmtNum(house.seats)} seats. Every seat is up.` : '';
+
+  ['Senate', 'House', 'Governor'].forEach((chamber) => {
+    const el = $('ch-' + chamber);
+    el.replaceChildren();
+    if (!races || (chamber !== 'Governor' && !control)) {
+      if (loadFailed) el.append(h('span', 'failed', 'Failed to load'));
+      return;
+    }
+    const t = tallyFor(chamber);
+    const c = control && control.find((x) => x.chamber === chamber);
+    if (c) {
+      const haveSeats = c.dem_seats != null || c.rep_seats != null;
+      const dem = haveSeats ? c.dem_seats : c.before_dem;
+      const rep = haveSeats ? c.rep_seats : c.before_rep;
+      if (dem != null || rep != null) {
+        const big = h('div', 'big');
+        big.append(h('span', 'd', 'D ' + (dem == null ? '—' : fmtNum(dem))), h('span', 'r', 'R ' + (rep == null ? '—' : fmtNum(rep))));
+        if (c.other_seats) big.append(h('span', 'i', 'I ' + fmtNum(c.other_seats)));
+        big.append(h('small', '', haveSeats ? 'seats won so far' : 'before the election'));
+        const bar = h('div', 'seatbar');
+        bar.setAttribute('role', 'img');
+        bar.setAttribute('aria-label', `Democrats ${dem ?? 0}, Republicans ${rep ?? 0}, of ${c.seats}; ${c.majority} for a majority`);
+        const sd = h('span', 'sd'); sd.style.width = ((dem || 0) / c.seats * 100) + '%';
+        const sr = h('span', 'sr'); sr.style.width = ((rep || 0) / c.seats * 100) + '%';
+        const tick = h('span', 'tick'); tick.style.left = `calc(${c.majority / c.seats * 100}% - 1px)`;
+        bar.append(sd, h('span', 'gap'), sr, tick);
+        el.append(big, bar);
+      } else {
+        el.append(h('div', 'big', '—'), h('p', 'tally', 'No seats called yet.'));
+      }
+      if (c.projected_control) el.append(h('p', 'live', 'Projected control: ' + c.projected_control));
+      if (c.source) el.append(h('p', 'tally', 'Seat counts: ' + c.source));
+    } else {
+      const big = h('div', 'big');
+      big.append(h('span', 'd', 'D ' + t.called_d), h('span', 'r', 'R ' + t.called_r));
+      if (t.called_i) big.append(h('span', 'i', 'I ' + t.called_i));
+      big.append(h('small', '', `of ${t.total} watched races won`));
+      el.append(big);
+    }
+    const parts = [`Watched races: ${t.called_d} won by D, ${t.called_r} by R`];
+    if (t.called_i) parts.push(`${t.called_i} by an independent`);
+    parts.push(`${t.counting} counting`, `${t.not_started} not reporting yet`);
+    el.append(h('p', 'tally', parts.join(' · ') + `. Flips: ${t.flips}.`));
+  });
+}
+
+function raceCard(r) {
+  const card = h('article', 'card');
+  if (r.status === 'called' && r.winner) card.classList.add('win-' + r.winner);
+  if (r.status === 'counting') card.classList.add('counting');
+
+  const top = h('div', 'card-top');
+  const names = h('div', '');
+  names.append(h('h4', 'card-name', r.district ? `${r.district} · ${r.state}` : `${r.state} ${r.chamber === 'Governor' ? 'governor' : 'Senate'}`));
+  const held = r.held_by ? `${PARTY[r.held_by]}-held` : '';
+  names.append(h('p', 'card-sub', [held, r.open_seat === true ? 'open seat' : ''].filter(Boolean).join(', ')));
+  top.append(names);
+  if (r.rating) {
+    const lean = /\bD\b/.test(r.rating) ? 'D' : /\bR\b/.test(r.rating) ? 'R' : '';
+    const chip = h('span', 'rating' + (lean ? ' lean-' + lean : ''), r.rating);
+    if (r.rating_source) chip.title = 'Rating: ' + r.rating_source;
+    top.append(chip);
+  }
+  card.append(top);
+
+  const hasVotes = r.status !== 'not_started' && (r.dem_pct != null || r.rep_pct != null || r.other_pct != null);
+  const cands = [
+    {p: 'D', name: r.dem_candidate, pct: r.dem_pct, on: r.dem_candidate != null || r.dem_pct != null || r.other_candidate == null},
+    {p: 'R', name: r.rep_candidate, pct: r.rep_pct, on: true},
+    {p: r.other_party || 'I', name: r.other_candidate, pct: r.other_pct, on: r.other_candidate != null},
+  ].filter((x) => x.on);
+  if (hasVotes) cands.sort((a, b) => (b.pct ?? -1) - (a.pct ?? -1));
+  const list = h('div', 'cands');
+  cands.forEach((x) => {
+    const row = h('div', 'cand' + (r.status === 'called' && r.winner === x.p ? ' won' : ''));
+    const nm = h('span', 'cand-name', x.name || PARTY[x.p]);
+    nm.append(h('i', '', ` (${x.p})`));
+    row.append(nm, h('span', '', hasVotes && x.pct != null ? fmtPct(x.pct) + '%' : ''));
+    if (hasVotes) {
+      const bar = h('div', 'cand-bar');
+      const fill = h('span', '');
+      fill.style.width = Math.max(0, Math.min(100, x.pct || 0)) + '%';
+      fill.style.background = `var(--${x.p.toLowerCase()})`;
+      bar.append(fill);
+      row.append(bar);
+    }
+    list.append(row);
+  });
+  card.append(list);
+
+  const st = h('div', 'status');
+  if (r.status === 'called' && r.winner) {
+    const who = r.winner === 'D' ? r.dem_candidate : r.winner === 'R' ? r.rep_candidate : r.other_candidate;
+    st.append(h('span', 'pill p-' + r.winner, 'Called: ' + (who || PARTY[r.winner])));
+    if (r.flip) st.append(h('span', 'pill flip', `Flip from ${r.held_by}`));
+    if (r.reporting_pct != null) st.append(h('span', 'muted', `${fmtNum(r.reporting_pct)}% of expected vote in`));
+  } else if (r.status === 'counting') {
+    st.append(h('span', 'counting-label', 'Counting'));
+    if (r.reporting_pct != null) st.append(h('span', 'muted', `${fmtNum(r.reporting_pct)}% of expected vote in`));
+    if (cands.length >= 2 && cands[0].pct != null && cands[1].pct != null) st.append(h('span', 'muted', `${cands[0].p} +${fmtPct(cands[0].pct - cands[1].pct)}`));
+  } else if (r.polls_close && new Date(r.polls_close).getTime() > Date.now()) {
+    st.append(h('span', 'muted', 'Polls close ' + fmtWhen(r.polls_close)));
+  } else {
+    st.append(h('span', 'muted', 'Polls closed · waiting for first results'));
+  }
+  card.append(st);
+
+  if (!hasVotes && r.poll_leader && r.poll_lead != null) {
+    const leader = r.poll_leader === 'D' ? r.dem_candidate : r.poll_leader === 'R' ? r.rep_candidate : r.other_candidate;
+    card.append(h('p', 'note', `Final polls: ${leader || PARTY[r.poll_leader]} +${fmtPct(r.poll_lead)} (${r.poll_source})`));
+  }
+  if (r.note) card.append(h('p', 'note', r.note));
+  return card;
+}
+
+function renderGrid() {
+  const el = $('grid');
+  el.replaceChildren();
+  if (!races) { if (loadFailed) el.append(h('span', 'failed', 'Failed to load')); return; }
+  const rows = races.filter((r) => filter === 'all' || (filter === 'close' ? r.status !== 'called' : r.chamber === filter));
+  let shown = 0;
+  [['Senate', 'Senate'], ['Governor', 'Governor'], ['House', 'House toss-ups']].forEach(([key, label]) => {
+    const rs = rows.filter((r) => r.chamber === key);
+    if (!rs.length) return;
+    shown += rs.length;
+    const grp = h('div', 'group');
+    grp.append(h('h3', '', label));
+    const cards = h('div', 'cards');
+    rs.forEach((r) => cards.append(raceCard(r)));
+    grp.append(cards);
+    el.append(grp);
+  });
+  if (!shown) el.append(h('p', 'note', 'Every race in this view has been called.'));
+}
+
+function render() { renderHeader(); renderControl(); renderGrid(); }
+
+async function load() {
+  try {
+    const bust = '?t=' + Date.now();
+    const [r, c] = await Promise.all([
+      fetch('races.json' + bust, {cache: 'no-store'}).then((x) => { if (!x.ok) throw new Error(x.status); return x.json(); }),
+      fetch('control.json' + bust, {cache: 'no-store'}).then((x) => { if (!x.ok) throw new Error(x.status); return x.json(); }),
+    ]);
+    races = r; control = c; loadFailed = false;
+  } catch (e) {
+    loadFailed = true;
+  }
+  render();
+}
+
+document.querySelectorAll('.chip').forEach((b) => {
+  b.addEventListener('click', () => {
+    filter = b.dataset.filter;
+    document.querySelectorAll('.chip').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    renderGrid();
+  });
+});
+
+load();
+setInterval(load, 120000);
+</script>
+</body>
+</html>
