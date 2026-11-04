@@ -1,17 +1,11 @@
-{
-  "checked_at": "2026-11-04T00:12:13.951Z",
-  "previous_checked_at": "2026-11-03T18:49:04Z",
-  "total": 29,
-  "changed_count": 4,
-  "unchanged_count": 25,
-  "changed": [
-    "Georgia Senate",
-    "New Hampshire Senate",
-    "Georgia governor",
-    "KY-6"
-  ],
-  "seats_changed": [
-    "Senate",
-    "House"
-  ]
-}
+[
+  {
+    "checked_at": "2026-11-04T00:21:45.388Z",
+    "previous_checked_at": "2026-11-04T00:12:13Z",
+    "total": 29,
+    "changed_count": 5,
+    "unchanged_count": 24,
+    "changed": "Georgia Senate, New Hampshire Senate, Georgia governor, VA-1, KY-6",
+    "seats_changed": "House"
+  }
+]
