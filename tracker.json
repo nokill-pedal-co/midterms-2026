@@ -1,11 +1,11 @@
 [
   {
-    "checked_at": "2026-11-04T06:21:52.668Z",
-    "previous_checked_at": "2026-11-04T06:12:00Z",
+    "checked_at": "2026-11-04T06:31:47.533Z",
+    "previous_checked_at": "2026-11-04T06:21:52Z",
     "total": 29,
-    "changed_count": 5,
-    "unchanged_count": 24,
-    "changed": "Michigan Senate, Nebraska Senate, Michigan governor, MI-4, MT-1",
+    "changed_count": 4,
+    "unchanged_count": 25,
+    "changed": "Nebraska Senate, MI-4, TX-35, MT-1",
     "seats_changed": "House"
   }
 ]
