@@ -1,9 +1,17 @@
 {
-  "checked_at": "2026-11-03T18:49:04Z",
-  "previous_checked_at": null,
+  "checked_at": "2026-11-04T00:12:13.951Z",
+  "previous_checked_at": "2026-11-03T18:49:04Z",
   "total": 29,
-  "changed_count": 0,
-  "unchanged_count": 29,
-  "changed": [],
-  "seats_changed": []
+  "changed_count": 4,
+  "unchanged_count": 25,
+  "changed": [
+    "Georgia Senate",
+    "New Hampshire Senate",
+    "Georgia governor",
+    "KY-6"
+  ],
+  "seats_changed": [
+    "Senate",
+    "House"
+  ]
 }
