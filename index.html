@@ -116,6 +116,7 @@
     <h1>2026 Midterm Battlegrounds</h1>
     <p class="take" id="take">Loading results…</p>
     <p class="asof" id="asof"></p>
+    <p class="asof" id="tracker" hidden></p>
   </header>
 
   <section class="section" aria-labelledby="control-h">
@@ -151,7 +152,7 @@
     <div class="grid" id="grid"></div>
   </section>
 
-  <p class="foot">Race calls and vote shares come from AP calls as reported by major news outlets, checked every 30 minutes on election night and a few times a day after that. This page reloads the data every two minutes. Ratings are from the Cook Political Report and other forecasters; pre-election poll leads are final averages (Silver Bulletin, RealClearPolitics) or single late polls where no average exists. House races shown are Cook toss-ups from October, not the full House. Times are in your time zone.</p>
+  <p class="foot">Race calls and vote shares come from AP calls as reported by major news outlets, checked every 10 minutes on election night and a few times a day after that. This page reloads the data every two minutes. Ratings are from the Cook Political Report and other forecasters; pre-election poll leads are final averages (Silver Bulletin, RealClearPolitics) or single late polls where no average exists. House races shown are Cook toss-ups from October, not the full House. Times are in your time zone.</p>
 </main>
 
 <script>
@@ -167,7 +168,7 @@ const h = (tag, cls, text) => {
 };
 const $ = (id) => document.getElementById(id);
 
-let races = null, control = null, loadFailed = false, filter = 'all';
+let races = null, control = null, tracker = null, loadFailed = false, filter = 'all';
 
 const tallyFor = (chamber) => {
   const rs = races.filter((r) => r.chamber === chamber);
@@ -348,7 +349,26 @@ function renderGrid() {
   if (!shown) el.append(h('p', 'note', 'Every race in this view has been called.'));
 }
 
-function render() { renderHeader(); renderControl(); renderGrid(); }
+function renderTracker() {
+  const el = $('tracker');
+  el.hidden = !tracker;
+  if (!tracker) return;
+  const since = tracker.previous_checked_at ? `Since the last check (${fmtWhen(tracker.previous_checked_at)}): ` : 'Since the last check: ';
+  const names = tracker.changed || [];
+  const seats = (tracker.seats_changed || []).map((c) => `${c} seat count`);
+  if (!names.length && !seats.length) {
+    el.textContent = `${since}nothing changed in any of the ${tracker.total} races.`;
+    return;
+  }
+  const shown = names.slice(0, 8).join(', ') + (names.length > 8 ? ` and ${names.length - 8} more` : '');
+  const parts = [];
+  if (names.length) parts.push(`${names.length} changed (${shown}), ${tracker.unchanged_count} unchanged`);
+  else parts.push(`no race changed`);
+  if (seats.length) parts.push(`${seats.join(' and ')} changed`);
+  el.textContent = since + parts.join('; ') + '.';
+}
+
+function render() { renderHeader(); renderTracker(); renderControl(); renderGrid(); }
 
 async function load() {
   try {
@@ -360,6 +380,12 @@ async function load() {
     races = r; control = c; loadFailed = false;
   } catch (e) {
     loadFailed = true;
+  }
+  try {
+    const t = await fetch('tracker.json?t=' + Date.now(), {cache: 'no-store'});
+    tracker = t.ok ? await t.json() : null;
+  } catch (e) {
+    tracker = null;
   }
   render();
 }
