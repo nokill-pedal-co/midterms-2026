@@ -232,7 +232,7 @@ function renderControl() {
         const big = h('div', 'big');
         big.append(h('span', 'd', 'D ' + (dem == null ? '—' : fmtNum(dem))), h('span', 'r', 'R ' + (rep == null ? '—' : fmtNum(rep))));
         if (c.other_seats) big.append(h('span', 'i', 'I ' + fmtNum(c.other_seats)));
-        big.append(h('small', '', haveSeats ? 'seats won so far' : 'before the election'));
+        big.append(h('small', '', haveSeats ? (chamber === 'Senate' ? 'seats so far, including those not up' : 'seats won so far') : 'before the election'));
         const bar = h('div', 'seatbar');
         bar.setAttribute('role', 'img');
         bar.setAttribute('aria-label', `Democrats ${dem ?? 0}, Republicans ${rep ?? 0}, of ${c.seats}; ${c.majority} for a majority`);
@@ -354,8 +354,9 @@ function renderTracker() {
   el.hidden = !tracker;
   if (!tracker) return;
   const since = tracker.previous_checked_at ? `Since the last check (${fmtWhen(tracker.previous_checked_at)}): ` : 'Since the last check: ';
-  const names = tracker.changed || [];
-  const seats = (tracker.seats_changed || []).map((c) => `${c} seat count`);
+  const list = (v) => Array.isArray(v) ? v : (v ? String(v).split(', ') : []);
+  const names = list(tracker.changed);
+  const seats = list(tracker.seats_changed).map((c) => `${c} seat count`);
   if (!names.length && !seats.length) {
     el.textContent = `${since}nothing changed in any of the ${tracker.total} races.`;
     return;
@@ -383,7 +384,8 @@ async function load() {
   }
   try {
     const t = await fetch('tracker.json?t=' + Date.now(), {cache: 'no-store'});
-    tracker = t.ok ? await t.json() : null;
+    const body = t.ok ? await t.json() : null;
+    tracker = Array.isArray(body) ? body[0] : body;
   } catch (e) {
     tracker = null;
   }
