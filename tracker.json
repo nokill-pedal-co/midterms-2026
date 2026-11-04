@@ -1,11 +1,11 @@
 [
   {
-    "checked_at": "2026-11-04T06:01:35.698Z",
-    "previous_checked_at": "2026-11-04T05:51:45Z",
+    "checked_at": "2026-11-04T06:12:00.280Z",
+    "previous_checked_at": "2026-11-04T06:01:35Z",
     "total": 29,
-    "changed_count": 5,
-    "unchanged_count": 24,
-    "changed": "Michigan Senate, Nebraska Senate, Michigan governor, MI-4, MT-1",
+    "changed_count": 16,
+    "unchanged_count": 13,
+    "changed": "Michigan Senate, Maine Senate, Texas Senate, Ohio Senate, Iowa Senate, Kansas Senate, Nebraska Senate, South Carolina Senate, Georgia Senate, New Hampshire Senate, North Carolina Senate, Michigan governor, Arizona governor, CO-5, MI-4, MT-1",
     "seats_changed": "House"
   }
 ]
