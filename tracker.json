@@ -1,11 +1,11 @@
 [
   {
-    "checked_at": "2026-11-04T04:52:14.258Z",
-    "previous_checked_at": "2026-11-04T04:42:45Z",
+    "checked_at": "2026-11-04T05:01:57.550Z",
+    "previous_checked_at": "2026-11-04T04:52:14Z",
     "total": 29,
-    "changed_count": 11,
-    "unchanged_count": 18,
-    "changed": "Michigan Senate, Maine Senate, Nebraska Senate, Kansas governor, Michigan governor, PA-1, NC-1, MI-4, TX-35, IA-2, MT-1",
-    "seats_changed": "Senate, House"
+    "changed_count": 9,
+    "unchanged_count": 20,
+    "changed": "Michigan Senate, Maine Senate, Nebraska Senate, Kansas governor, Michigan governor, SC-1, MI-4, IA-2, MT-1",
+    "seats_changed": "House"
   }
 ]
