@@ -1,4 +1,4 @@
 [
-  {"chamber":"Senate","seats":100,"majority":51,"before_dem":47,"before_rep":53,"dem_seats":36,"rep_seats":31,"other_seats":0,"uncalled":33,"projected_control":null,"source":"NBC News, 7:40 pm ET","updated_at":"2026-11-04T00:44:58Z"},
-  {"chamber":"House","seats":435,"majority":218,"before_dem":null,"before_rep":null,"dem_seats":10,"rep_seats":5,"other_seats":0,"uncalled":420,"projected_control":null,"source":"NBC News, 7:40 pm ET","updated_at":"2026-11-04T00:44:58Z"}
+  {"chamber":"Senate","seats":100,"majority":51,"before_dem":47,"before_rep":53,"dem_seats":36,"rep_seats":31,"other_seats":0,"uncalled":33,"projected_control":null,"source":"NBC News, 7:50 pm ET","updated_at":"2026-11-04T00:51:30Z"},
+  {"chamber":"House","seats":435,"majority":218,"before_dem":null,"before_rep":null,"dem_seats":12,"rep_seats":10,"other_seats":0,"uncalled":413,"projected_control":null,"source":"NBC News, 7:50 pm ET","updated_at":"2026-11-04T00:51:30Z"}
 ]
