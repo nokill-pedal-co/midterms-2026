@@ -1,11 +1,11 @@
 [
   {
-    "checked_at": "2026-11-04T00:21:45.388Z",
-    "previous_checked_at": "2026-11-04T00:12:13Z",
+    "checked_at": "2026-11-04T00:31:47.595Z",
+    "previous_checked_at": "2026-11-04T00:21:45Z",
     "total": 29,
-    "changed_count": 5,
-    "unchanged_count": 24,
-    "changed": "Georgia Senate, New Hampshire Senate, Georgia governor, VA-1, KY-6",
+    "changed_count": 6,
+    "unchanged_count": 23,
+    "changed": "South Carolina Senate, Georgia Senate, New Hampshire Senate, Georgia governor, VA-1, KY-6",
     "seats_changed": "House"
   }
 ]
