@@ -1,11 +1,11 @@
 [
   {
-    "checked_at": "2026-11-05T03:07:07.092Z",
-    "previous_checked_at": "2026-11-04T21:06:18Z",
+    "checked_at": "2026-11-05T15:06:55.662Z",
+    "previous_checked_at": "2026-11-05T03:07:06Z",
     "total": 29,
-    "changed_count": 13,
-    "unchanged_count": 16,
-    "changed": "Michigan Senate, Maine Senate, Texas Senate, Alaska Senate, Nebraska Senate, New Hampshire Senate, Kansas governor, Nevada governor, Michigan governor, Arizona governor, CO-5, TX-35, MT-1",
-    "seats_changed": "House"
+    "changed_count": 4,
+    "unchanged_count": 25,
+    "changed": "Alaska Senate, Kansas governor, CO-5, MT-1",
+    "seats_changed": ""
   }
 ]
