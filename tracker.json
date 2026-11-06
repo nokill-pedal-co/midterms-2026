@@ -1,11 +1,11 @@
 [
   {
-    "checked_at": "2026-11-06T03:07:37.908Z",
-    "previous_checked_at": "2026-11-05T21:06:31Z",
+    "checked_at": "2026-11-06T15:06:31.433Z",
+    "previous_checked_at": "2026-11-06T03:07:37Z",
     "total": 29,
-    "changed_count": 3,
-    "unchanged_count": 26,
-    "changed": "Kansas governor, CO-5, MT-1",
+    "changed_count": 0,
+    "unchanged_count": 29,
+    "changed": "",
     "seats_changed": "House"
   }
 ]
