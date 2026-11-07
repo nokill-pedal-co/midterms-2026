@@ -1,11 +1,11 @@
 [
   {
-    "checked_at": "2026-11-06T21:06:18.789Z",
-    "previous_checked_at": "2026-11-06T15:06:31Z",
+    "checked_at": "2026-11-07T03:06:57.349Z",
+    "previous_checked_at": "2026-11-06T21:06:18Z",
     "total": 29,
-    "changed_count": 0,
-    "unchanged_count": 29,
-    "changed": "",
+    "changed_count": 1,
+    "unchanged_count": 28,
+    "changed": "Kansas governor",
     "seats_changed": "House"
   }
 ]
