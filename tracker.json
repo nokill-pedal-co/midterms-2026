@@ -1,11 +1,11 @@
 [
   {
-    "checked_at": "2026-11-13T21:06:24.964Z",
-    "previous_checked_at": "2026-11-13T15:06:19Z",
+    "checked_at": "2026-11-14T03:06:12.583Z",
+    "previous_checked_at": "2026-11-13T21:06:17Z",
     "total": 29,
-    "changed_count": 1,
-    "unchanged_count": 28,
-    "changed": "Alaska Senate",
+    "changed_count": 0,
+    "unchanged_count": 29,
+    "changed": "",
     "seats_changed": "House"
   }
 ]
